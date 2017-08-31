@@ -1,3 +1,28 @@
 <resources>
     <string name="app_name">InventoryApp</string>
+
+    <!-- Title text for the empty view [CHAR LIMIT=50] -->
+    <string name="empty_view_title_text">It\'s a bit lonely here...</string>
+
+    <!-- Subtitle text for the empty view that prompts the user to add a product [CHAR LIMIT=50] -->
+    <string name="empty_view_subtitle_text">Get started by adding a product</string>
+
+    <!-- Text hints for fields in the editor [CHAR LIMIT=30] -->
+    <string name="hint_product_name">Name</string>
+    <string name="hint_product_price">Price</string>
+    <string name="hint_product_quantity">Current Quantity</string>
+    <string name="hint_product_supplier">Supplier</string>
+
+    <!-- Labels for fields in the editor [CHAR LIMIT=30] -->
+    <string name="editor_label_name">Name</string>
+    <string name="editor_label_price">Price</string>
+    <string name="editor_label_quantity">Quantity</string>
+    <string name="editor_label_supplier">Supplier</string>
+    <string name="editor_label_image">Image</string>
+
+    <!-- Text for "Add Image" button in the editor -->
+    <string name="editor_add_image_btn">Add Image</string>
+
+    <!-- Content Description for ImageView in the editor -->
+    <string name="editor_image_view_description">Product Image</string>
 </resources>
