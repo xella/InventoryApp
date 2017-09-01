@@ -81,8 +81,8 @@
                 android:id="@+id/edit_product_image"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/editor_image_view_description"/>
+                android:contentDescription="@string/editor_image_view_description"
+                android:scaleType="centerCrop" />
 
             <Button
                 android:id="@+id/edit_product_add_image_btn"
