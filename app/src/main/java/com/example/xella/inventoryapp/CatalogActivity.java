@@ -7,7 +7,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
@@ -20,7 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.example.xella.inventoryapp.data.ProductContract.ProductEntry;
-import com.example.xella.inventoryapp.data.ProductDbHelper;
+
 
 public class CatalogActivity extends AppCompatActivity implements
         LoaderManager.LoaderCallbacks<Cursor>{
@@ -30,8 +29,6 @@ public class CatalogActivity extends AppCompatActivity implements
 
     /** Adapter for the ListView */
     ProductCursorAdapter mCursorAdapter;
-
-    ProductDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,8 +67,6 @@ public class CatalogActivity extends AppCompatActivity implements
                 // Form the content URI that represents the specific product that was clicked on,
                 // by appending the "id" (passed as input to this method) onto the
                 // {@link ProductEntry#CONTENT_URI}.
-                // For example, the URI would be "content://com.example.xella.inventoryapp/products/2"
-                // if the product with ID 2 was clicked on.
                 Uri currentProductUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
 
                 // Set the URI on the data field of the intent

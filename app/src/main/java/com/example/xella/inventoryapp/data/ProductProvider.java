@@ -64,9 +64,9 @@ public class ProductProvider extends ContentProvider {
         return true;
     }
 
-    @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+    public Cursor query(Uri uri, String[] projection,
+                        String selection, String[] selectionArgs, String sortOrder) {
 
         // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
@@ -129,7 +129,7 @@ public class ProductProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public String getType(@NonNull Uri uri) {
+    public String getType(Uri uri) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
@@ -143,7 +143,7 @@ public class ProductProvider extends ContentProvider {
 
     @Nullable
     @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+    public Uri insert(Uri uri, ContentValues contentValues) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
@@ -192,7 +192,7 @@ public class ProductProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int delete(Uri uri, String selection, String[] selectionArgs) {
         // Get writeable database
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
 
@@ -226,7 +226,8 @@ public class ProductProvider extends ContentProvider {
     }
 
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues contentValues, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update(Uri uri, ContentValues contentValues,
+                      String selection, String[] selectionArgs) {
         final int match = sUriMatcher.match(uri);
         switch (match) {
             case PRODUCTS:
@@ -237,7 +238,11 @@ public class ProductProvider extends ContentProvider {
                 // arguments will be a String array containing the actual ID.
                 selection = ProductEntry._ID + "=?";
                 selectionArgs = new String[] { String.valueOf(ContentUris.parseId(uri)) };
-                return updateProduct(uri, contentValues, selection, selectionArgs);
+                int rowsUpdeted = updateProduct(uri, contentValues, selection, selectionArgs);
+                if (rowsUpdeted != 0) {
+                    getContext().getContentResolver().notifyChange(uri, null);
+                }
+                return rowsUpdeted;
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
@@ -248,12 +253,8 @@ public class ProductProvider extends ContentProvider {
      * specified in the selection and selection arguments (which could be 0 or 1 or more products).
      * Return the number of rows that were successfully updated.
      */
-    private int updateProduct(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        // If there are no values to update, then don't try to update the database
-        if (values.size() == 0) {
-            return 0;
-        }
-
+    private int updateProduct(Uri uri, ContentValues values,
+                              String selection, String[] selectionArgs) {
         // If the {@link ProductEntry#COLUMN_PRODUCT_NAME} key is present,
         // check that the name value is not null.
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_NAME)) {
@@ -289,6 +290,11 @@ public class ProductProvider extends ContentProvider {
             if (supplier == null) {
                 throw new IllegalArgumentException("Product requires a name");
             }
+        }
+
+        // If there are no values to update, then don't try to update the database
+        if (values.size() == 0) {
+            return 0;
         }
 
         // Otherwise, get writable database to update the data
