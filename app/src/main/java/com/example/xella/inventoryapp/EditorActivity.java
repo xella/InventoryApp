@@ -243,6 +243,17 @@ public class EditorActivity extends AppCompatActivity implements
             }
         }
 
+        if (TextUtils.isEmpty(quantityString)) {
+            mQuantityTextView.setError("Product quantity is missing");
+            validationError = true;
+        } else {
+            int quantity = Integer.parseInt(quantityString);
+            if (quantity < 0) {
+                mQuantityTextView.setError("Product quantity must be more than 0");
+                validationError = true;
+            }
+        }
+
         if (TextUtils.isEmpty(supplierString)) {
             mSupplierEditText.setError("Supplier name is missing");
             validationError = true;
