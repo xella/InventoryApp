@@ -81,11 +81,25 @@ public final class ProductContract {
         public final static String COLUMN_PRODUCT_QUANTITY = "quantity";
 
         /**
+         * Product image uri
+         *
+         * Type: TEXT
+         */
+        public final static String COLUMN_PRODUCT_IMAGE_URI = "image";
+
+        /**
          * Supplier of the product
          *
          * Type: TEXT
          */
         public final static String COLUMN_PRODUCT_SUPPLIER = "supplier";
+
+        /**
+         * Supplier email
+         *
+         * Type: TEXT
+         */
+        public final static String COLUMN_PRODUCT_SUPPLIER_EMAIL = "email";
 
     }
 }

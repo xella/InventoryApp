@@ -17,8 +17,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.xella.inventoryapp.data.ProductContract.ProductEntry;
+
+import static com.example.xella.inventoryapp.data.ProductContract.CONTENT_AUTHORITY;
 
 
 public class CatalogActivity extends AppCompatActivity implements
@@ -92,6 +95,10 @@ public class CatalogActivity extends AppCompatActivity implements
         values.put(ProductEntry.COLUMN_PRODUCT_NAME, "Nexus 5X");
         values.put(ProductEntry.COLUMN_PRODUCT_PRICE, 27);
         values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, 3);
+        values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL, "example@gmail.com");
+
+        Uri imageUri = Uri.parse("android.resource://" + CONTENT_AUTHORITY + "/" + R.drawable.ic_add_a_photo);
+        values.put(ProductEntry.COLUMN_PRODUCT_IMAGE_URI, imageUri.toString());
         values.put(ProductEntry.COLUMN_PRODUCT_SUPPLIER, "LG");
 
         // Insert a new row for product into the provider using the ContentResolver.
@@ -99,8 +106,6 @@ public class CatalogActivity extends AppCompatActivity implements
         // into the products database table.
         // Receive the new content URI that will allow us to access product's data in the future.
         Uri newUri = getContentResolver().insert(ProductEntry.CONTENT_URI, values);
-
-        Log.v("CatalogActivity", newUri.toString());
     }
 
     @Override
@@ -135,6 +140,7 @@ public class CatalogActivity extends AppCompatActivity implements
                 ProductEntry.COLUMN_PRODUCT_NAME,
                 ProductEntry.COLUMN_PRODUCT_PRICE,
                 ProductEntry.COLUMN_PRODUCT_QUANTITY,
+                ProductEntry.COLUMN_PRODUCT_IMAGE_URI,
                 ProductEntry.COLUMN_PRODUCT_SUPPLIER};
 
         // This loader will execute the ContentProvider's query method on a background thread
@@ -161,5 +167,21 @@ public class CatalogActivity extends AppCompatActivity implements
     private void deleteAllProducts() {
         int rowsDeleted = getContentResolver().delete(ProductEntry.CONTENT_URI, null, null);
         Log.v("CatalogActivity", rowsDeleted + " rows deleted from product database");
+    }
+
+    public void onSaleButtonClick(long id, int quantity) {
+        Uri currentItemUri = ContentUris.withAppendedId(ProductEntry.CONTENT_URI, id);
+        int newQuantity;
+        if (quantity > 0) {
+            newQuantity = quantity - 1;
+            Toast.makeText(this, getString(R.string.sale_button_item_sold), Toast.LENGTH_SHORT).show();
+        } else {
+            newQuantity = quantity;
+            Toast.makeText(this, getString(R.string.sale_button_item_out_of_stock), Toast.LENGTH_SHORT).show();
+        }
+        ContentValues values = new ContentValues();
+        values.put(ProductEntry.COLUMN_PRODUCT_QUANTITY, newQuantity);
+
+        getContentResolver().update(currentItemUri, values, null, null);
     }
 }

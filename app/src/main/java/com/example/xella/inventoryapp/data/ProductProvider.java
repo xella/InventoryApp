@@ -173,9 +173,19 @@ public class ProductProvider extends ContentProvider {
             throw new IllegalArgumentException("Product requires a valid quantity");
         }
 
+        String imageUri = values.getAsString(ProductEntry.COLUMN_PRODUCT_IMAGE_URI);
+        if (imageUri == null || imageUri.isEmpty()) {
+            throw new IllegalArgumentException("Product requires a valid image uri");
+        }
+
         String supplier = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
         if (supplier == null) {
             throw new IllegalArgumentException("Product requires a product name");
+        }
+
+        String supplierEmail = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL);
+        if (supplierEmail == null) {
+            throw new IllegalArgumentException("Product requires a supplier email");
         }
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
@@ -283,12 +293,28 @@ public class ProductProvider extends ContentProvider {
             }
         }
 
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_IMAGE_URI)) {
+            String imageUri = values.getAsString(ProductEntry.COLUMN_PRODUCT_IMAGE_URI);
+            if (imageUri == null || imageUri.isEmpty()) {
+                throw new IllegalArgumentException("Product requires a valid image uri");
+            }
+        }
+
         // If the {@link ProductEntry#COLUMN_PRODUCT_SUPPLIER} key is present,
         // check that the quantity value is not null.
         if (values.containsKey(ProductEntry.COLUMN_PRODUCT_SUPPLIER)) {
             String supplier = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER);
             if (supplier == null) {
                 throw new IllegalArgumentException("Product requires a name");
+            }
+        }
+
+        // If the {@link ProductEntry#COLUMN_PRODUCT_SUPPLIER_EMAIL} key is present,
+        // check that the quantity value is not null.
+        if (values.containsKey(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL)) {
+            String supplierEmail = values.getAsString(ProductEntry.COLUMN_PRODUCT_SUPPLIER_EMAIL);
+            if (supplierEmail == null) {
+                throw new IllegalArgumentException("Product requires a supplier email");
             }
         }
 

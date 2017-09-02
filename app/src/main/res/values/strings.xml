@@ -7,11 +7,16 @@
     <!-- Subtitle text for the empty view that prompts the user to add a product [CHAR LIMIT=50] -->
     <string name="empty_view_subtitle_text">Get started by adding a product</string>
 
+    <string name="list_item_label_price">Price: </string>
+    <string name="list_item_label_supplier">Supplier: </string>
+    <string name="list_item_label_quantity">Quantity: </string>
+
     <!-- Text hints for fields in the editor [CHAR LIMIT=30] -->
     <string name="hint_product_name">Name</string>
     <string name="hint_product_price">Price</string>
     <string name="hint_product_quantity">Current Quantity</string>
     <string name="hint_product_supplier">Supplier</string>
+    <string name="hint_product_supplier_email">Supplier email</string>
 
     <!-- Labels for fields in the editor [CHAR LIMIT=30] -->
     <string name="editor_label_name">Name</string>
@@ -19,6 +24,8 @@
     <string name="editor_label_quantity">Quantity</string>
     <string name="editor_label_supplier">Supplier</string>
     <string name="editor_label_image">Image</string>
+    <string name="editor_label_order_more">Order more</string>
+    <string name="editor_label_supplier_email">Supplier email</string>
 
     <!-- Text for "Add Image" button in the editor -->
     <string name="editor_add_image_btn">Add Image</string>
@@ -82,4 +89,20 @@
 
     <string name="quantity_decrement_toast">Quantity cannot be less than 0</string>
 
+    <!-- Order subject and order text for Contact supplier option -->
+    <string name="order_more_subject_text">Order. </string>
+    <string name="order_more_order_text">I need 10 more pieces of this product. Thanks!</string>
+
+    <!-- Sale button text and connected Toast messages-->
+    <string name="sale_button">Sale</string>
+    <string name="sale_button_item_sold">1 item is sold!</string>
+    <string name="sale_button_item_out_of_stock">This product is ouot of stock</string>
+
+    <!-- Text for "Contact supplier" button-->
+    <string name="contact_supplier_button">Contact Supplier</string>
+
+    <!-- Quantity related buttons and default value-->
+    <string name="decrease_button">-</string>
+    <string name="increase_button">+</string>
+    <string name="default_quantity">0</string>
 </resources>
