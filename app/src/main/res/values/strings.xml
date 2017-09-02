@@ -29,6 +29,7 @@
 
     <!-- Text for "Add Image" button in the editor -->
     <string name="editor_add_image_btn">Add Image</string>
+    <string name="editor_change_image_btn">Change Image</string>
 
     <!-- Content Description for ImageView in the editor -->
     <string name="editor_image_view_description">Product Image</string>
@@ -96,7 +97,7 @@
     <!-- Sale button text and connected Toast messages-->
     <string name="sale_button">Sale</string>
     <string name="sale_button_item_sold">1 item is sold!</string>
-    <string name="sale_button_item_out_of_stock">This product is ouot of stock</string>
+    <string name="sale_button_item_out_of_stock">This product is out of stock</string>
 
     <!-- Text for "Contact supplier" button-->
     <string name="contact_supplier_button">Contact Supplier</string>

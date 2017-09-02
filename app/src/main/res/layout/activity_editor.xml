@@ -37,6 +37,7 @@
             <EditText
                 android:id="@+id/edit_product_price"
                 style="@style/EditorFieldStyle"
+                android:inputType="number"
                 android:hint="@string/hint_product_price" />
         </LinearLayout>
 
@@ -106,6 +107,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/order_more_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 

@@ -49,7 +49,7 @@ public class EditorActivity extends AppCompatActivity implements
     private Uri mCurrentProductUri;
 
     /** URI for the product image */
-    private Uri mImageUri;
+    private Uri mImageUri = Uri.parse("");
 
     /** EditText field to enter the product's name */
     private EditText mNameEditText;
@@ -105,23 +105,6 @@ public class EditorActivity extends AppCompatActivity implements
         Intent intent = getIntent();
         mCurrentProductUri = intent.getData();
 
-        // If the intent DOES NOT contain a Product content URI, then we know that we are
-        // creating a new Product.
-        if (mCurrentProductUri == null) {
-            // This is a new Product, so change the app bar to say "Add a Product"
-            setTitle(getString(R.string.editor_activity_title_new_product));
-
-            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sence to delete a Product that hasn't been created yet.)
-            invalidateOptionsMenu();
-        } else {
-            // Otherwise this is an existing Product, so change app bar to say "Edit Product"
-            setTitle(getString(R.string.editor_activity_title_edit_product));
-            // Initialize a loader to read the Product data from the database
-            // and display the current values in the editor
-            getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
-        }
-
         // Find all relevant views that we will need to read user input from
         mNameEditText = (EditText) findViewById(R.id.edit_product_name);
         mPriceEditText = (EditText) findViewById(R.id.edit_product_price);
@@ -133,6 +116,28 @@ public class EditorActivity extends AppCompatActivity implements
         mOrderMore = (Button) findViewById(R.id.order_more_btn);
         mProductImageView = (ImageView) findViewById(R.id.edit_product_image);
         mAddImageButton = (Button) findViewById(R.id.edit_product_add_image_btn);
+        View orderMoreLayout = findViewById(R.id.order_more_layout);
+
+        // If the intent DOES NOT contain a Product content URI, then we know that we are
+        // creating a new Product.
+        if (mCurrentProductUri == null) {
+            // This is a new Product, so change the app bar to say "Add a Product"
+            setTitle(getString(R.string.editor_activity_title_new_product));
+            orderMoreLayout.setVisibility(View.GONE);
+            mProductImageView.setVisibility(View.GONE);
+            // Invalidate the options menu, so the "Delete" menu option can be hidden.
+            // (It doesn't make sence to delete a Product that hasn't been created yet.)
+            invalidateOptionsMenu();
+        } else {
+            // Otherwise this is an existing Product, so change app bar to say "Edit Product"
+            setTitle(getString(R.string.editor_activity_title_edit_product));
+            mAddImageButton.setText(getString(R.string.editor_change_image_btn));
+            orderMoreLayout.setVisibility(View.VISIBLE);
+            orderButtonClick();
+            // Initialize a loader to read the Product data from the database
+            // and display the current values in the editor
+            getLoaderManager().initLoader(EXISTING_PRODUCT_LOADER, null, this);
+        }
 
         // Setup OnTouchListeners on all the input fields, so we can determine if the user
         // has touched or modified them. This will let us know if there are unsaved changes
@@ -165,6 +170,7 @@ public class EditorActivity extends AppCompatActivity implements
                 startActivityForResult(Intent.createChooser(intent, "Select picture"), 0);
 
                 mProductHasChanged = true;
+                mProductImageView.setVisibility(View.VISIBLE);
             }
         });
 
@@ -192,30 +198,14 @@ public class EditorActivity extends AppCompatActivity implements
                 mQuantityTextView.setText(String.valueOf(quantity));
             }
         });
-
-        mOrderMore.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_SENDTO);
-                intent.setData(Uri.parse("mailto:"));
-
-                String supplier_email = mSupplierEmailEditText.getText().toString();
-                String subjectText = getString(R.string.order_more_subject_text) + mNameEditText.getText().toString();
-                String orderText = getString(R.string.order_more_order_text);
-                intent.putExtra(Intent.EXTRA_EMAIL, new String[] { supplier_email });
-                intent.putExtra(Intent.EXTRA_SUBJECT, subjectText);
-                intent.putExtra(Intent.EXTRA_TEXT, orderText);
-                if (intent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(intent);
-                }
-            }
-        });
     }
 
     /**
      * Get user input from editor and save product into database.
      */
     private void saveProduct() {
+        boolean validationError = false;
+
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String nameString = mNameEditText.getText().toString().trim();
@@ -229,9 +219,46 @@ public class EditorActivity extends AppCompatActivity implements
         // and check if all the fields in the editor are blank
         if (mCurrentProductUri == null &&
                 TextUtils.isEmpty(nameString) && TextUtils.isEmpty(priceString) &&
-                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString)) {
+                TextUtils.isEmpty(quantityString) && TextUtils.isEmpty(supplierString) &&
+                TextUtils.isEmpty(supplierEmailString) && TextUtils.isEmpty(productImageUri)) {
             // Since no fields were modified, we can return early without creating a new product.
             // No need to create ContentValues and no need to do any ContentProvider operations.
+            finish();
+            return;
+        }
+
+        if (TextUtils.isEmpty(nameString)) {
+            mNameEditText.setError("Name is missing");
+            validationError = true;
+        }
+
+        if (TextUtils.isEmpty(priceString)) {
+            mPriceEditText.setError("Prooduct price is missing");
+            validationError = true;
+        } else {
+            int price = Integer.parseInt(priceString);
+            if ( price < 0 || price > 10000000) {
+                mPriceEditText.setError("Product price must be more than 0");
+                validationError = true;
+            }
+        }
+
+        if (TextUtils.isEmpty(supplierString)) {
+            mSupplierEditText.setError("Supplier name is missing");
+            validationError = true;
+        }
+
+        if (TextUtils.isEmpty(supplierEmailString)) {
+            mSupplierEmailEditText.setError("Supplier email is missing");
+            validationError = true;
+        }
+
+        if (TextUtils.isEmpty(productImageUri)) {
+            mAddImageButton.setError("Product image is missing");
+            validationError = true;
+        }
+
+        if (validationError) {
             return;
         }
 
@@ -279,6 +306,9 @@ public class EditorActivity extends AppCompatActivity implements
                         Toast.LENGTH_SHORT).show();
             }
         }
+
+        // Exit activity
+        finish();
     }
 
     @Override
@@ -311,8 +341,6 @@ public class EditorActivity extends AppCompatActivity implements
             case R.id.action_save:
                 // Save product to database
                 saveProduct();
-                // Exit activity
-                finish();
                 return true;
             // Respond to a click on the "Delete" menu option
             case R.id.action_delete:
@@ -552,5 +580,25 @@ public class EditorActivity extends AppCompatActivity implements
                 mProductImageView.invalidate();
             }
         }
+    }
+
+    private void orderButtonClick() {
+        mOrderMore.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:"));
+
+                String supplier_email = mSupplierEmailEditText.getText().toString();
+                String subjectText = getString(R.string.order_more_subject_text) + mNameEditText.getText().toString();
+                String orderText = getString(R.string.order_more_order_text);
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{supplier_email});
+                intent.putExtra(Intent.EXTRA_SUBJECT, subjectText);
+                intent.putExtra(Intent.EXTRA_TEXT, orderText);
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
     }
 }
